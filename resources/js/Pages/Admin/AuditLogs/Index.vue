@@ -6,10 +6,14 @@ import { ref, computed, watch } from 'vue';
 const props = defineProps({
     auditLogs: Object,
     filters: Object,
+    actions: Array,
+    status_codes: Array,
 });
 
 const search = ref(props.filters?.search || '');
 const method = ref(props.filters?.method || '');
+const action = ref(props.filters?.action || '');
+const statusCode = ref(props.filters?.status_code || '');
 const userId = ref(props.filters?.user_id || '');
 const dateFrom = ref(props.filters?.date_from || '');
 const dateTo = ref(props.filters?.date_to || '');
@@ -21,6 +25,7 @@ const headers = [
     { title: 'User', key: 'user', sortable: false },
     { title: 'Aksi', key: 'action', sortable: true },
     { title: 'Metode', key: 'method', sortable: true },
+    { title: 'Status', key: 'status_code', sortable: true },
     { title: 'Route', key: 'route_name', sortable: true },
     { title: 'IP', key: 'ip_address', sortable: true },
     { title: 'Detail', key: 'detail', sortable: false },
@@ -50,12 +55,40 @@ const applyFilters = () => {
         {
             search: search.value || undefined,
             method: method.value || undefined,
+            action: action.value || undefined,
+            status_code: statusCode.value || undefined,
             user_id: userId.value || undefined,
             date_from: dateFrom.value || undefined,
             date_to: dateTo.value || undefined,
         },
         { preserveState: true, replace: true }
     );
+};
+
+const exportCsv = () => {
+    const params = new URLSearchParams();
+    if (search.value) params.set('search', search.value);
+    if (method.value) params.set('method', method.value);
+    if (action.value) params.set('action', action.value);
+    if (statusCode.value) params.set('status_code', statusCode.value);
+    if (userId.value) params.set('user_id', userId.value);
+    if (dateFrom.value) params.set('date_from', dateFrom.value);
+    if (dateTo.value) params.set('date_to', dateTo.value);
+    params.set('export', '1');
+    window.location = `${route('admin.audit_logs.index')}?${params.toString()}`;
+};
+
+const exportPdf = () => {
+    const params = new URLSearchParams();
+    if (search.value) params.set('search', search.value);
+    if (method.value) params.set('method', method.value);
+    if (action.value) params.set('action', action.value);
+    if (statusCode.value) params.set('status_code', statusCode.value);
+    if (userId.value) params.set('user_id', userId.value);
+    if (dateFrom.value) params.set('date_from', dateFrom.value);
+    if (dateTo.value) params.set('date_to', dateTo.value);
+    params.set('pdf', '1');
+    window.location = `${route('admin.audit_logs.index')}?${params.toString()}`;
 };
 
 watch([method, userId], applyFilters);
@@ -93,6 +126,30 @@ watch([method, userId], applyFilters);
                             v-model="method"
                             :items="['GET', 'POST', 'PUT', 'PATCH', 'DELETE']"
                             label="Metode"
+                            variant="solo-filled"
+                            flat
+                            rounded="lg"
+                            hide-details
+                            density="comfortable"
+                            clearable
+                            style="min-width: 140px"
+                        ></v-select>
+                        <v-select
+                            v-model="action"
+                            :items="actions"
+                            label="Action"
+                            variant="solo-filled"
+                            flat
+                            rounded="lg"
+                            hide-details
+                            density="comfortable"
+                            clearable
+                            style="min-width: 200px"
+                        ></v-select>
+                        <v-select
+                            v-model="statusCode"
+                            :items="status_codes"
+                            label="Status"
                             variant="solo-filled"
                             flat
                             rounded="lg"
@@ -148,13 +205,30 @@ watch([method, userId], applyFilters);
                         >
                             Terapkan
                         </v-btn>
+                        <v-btn
+                            color="primary"
+                            variant="outlined"
+                            rounded="lg"
+                            class="text-none font-weight-black"
+                            @click="exportCsv"
+                        >
+                            Export CSV
+                        </v-btn>
+                        <v-btn
+                            color="primary"
+                            variant="tonal"
+                            rounded="lg"
+                            class="text-none font-weight-black"
+                            @click="exportPdf"
+                        >
+                            Export PDF
+                        </v-btn>
                     </div>
                 </div>
 
                 <v-data-table
                     :headers="headers"
                     :items="auditLogs.data"
-                    :search="search"
                     hover
                     class="bg-transparent audit-table"
                 >
@@ -202,6 +276,17 @@ watch([method, userId], applyFilters);
                         </v-chip>
                     </template>
 
+                    <template v-slot:item.status_code="{ item }">
+                        <v-chip
+                            size="x-small"
+                            class="font-weight-black uppercase tracking-widest px-3"
+                            :color="(item.status_code || 0) >= 400 ? 'error' : 'success'"
+                            variant="tonal"
+                        >
+                            {{ item.status_code || '-' }}
+                        </v-chip>
+                    </template>
+
                     <template v-slot:item.route_name="{ item }">
                         <div class="font-weight-bold text-slate-600 dark:text-slate-400">
                             {{ item.route_name || '-' }}
@@ -234,6 +319,24 @@ watch([method, userId], applyFilters);
                         </div>
                     </template>
                 </v-data-table>
+
+                <div class="d-flex justify-end pt-4">
+                    <v-pagination
+                        :length="auditLogs.last_page"
+                        :model-value="auditLogs.current_page"
+                        rounded="circle"
+                        @update:model-value="(page) => router.get(route('admin.audit_logs.index'), {
+                            page,
+                            search: search || undefined,
+                            method: method || undefined,
+                            action: action || undefined,
+                            status_code: statusCode || undefined,
+                            user_id: userId || undefined,
+                            date_from: dateFrom || undefined,
+                            date_to: dateTo || undefined,
+                        }, { preserveState: true, replace: true })"
+                    ></v-pagination>
+                </div>
             </template>
         </v-card>
 
@@ -264,6 +367,10 @@ watch([method, userId], applyFilters);
                         <div class="detail-item">
                             <div class="label">Method</div>
                             <div class="value">{{ selectedLog?.method }}</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="label">Status</div>
+                            <div class="value">{{ selectedLog?.status_code || '-' }}</div>
                         </div>
                         <div class="detail-item">
                             <div class="label">Route</div>

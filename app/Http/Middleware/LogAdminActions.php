@@ -32,6 +32,7 @@ class LogAdminActions
             'user_id' => $request->user()->id,
             'action' => $request->route()?->getName(),
             'method' => $request->method(),
+            'status_code' => $response->getStatusCode(),
             'url' => $request->fullUrl(),
             'route_name' => $request->route()?->getName(),
             'ip_address' => $request->ip(),

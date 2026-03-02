@@ -23,6 +23,7 @@ class AuditLogSeeder extends Seeder
             [
                 'action' => 'admin.members.store',
                 'method' => 'POST',
+                'status_code' => 201,
                 'url' => '/admin/members',
                 'route_name' => 'admin.members.store',
                 'ip_address' => '127.0.0.1',
@@ -35,6 +36,7 @@ class AuditLogSeeder extends Seeder
             [
                 'action' => 'admin.schedules.store',
                 'method' => 'POST',
+                'status_code' => 201,
                 'url' => '/admin/schedules',
                 'route_name' => 'admin.schedules.store',
                 'ip_address' => '127.0.0.1',
@@ -47,6 +49,7 @@ class AuditLogSeeder extends Seeder
             [
                 'action' => 'admin.announcements.update',
                 'method' => 'PATCH',
+                'status_code' => 200,
                 'url' => '/admin/announcements/1',
                 'route_name' => 'admin.announcements.update',
                 'ip_address' => '127.0.0.1',

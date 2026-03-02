@@ -25,6 +25,7 @@ const allNavItems = [
     { name: 'Laporan', routeName: 'admin.reports.index', icon: 'mdi-file-chart-outline', roles: ['super_admin', 'secretary', 'treasurer'] },
     { name: 'Audit Log', routeName: 'admin.audit_logs.index', icon: 'mdi-shield-check-outline', roles: ['super_admin', 'secretary'] },
     { name: 'Role & Akses', routeName: 'admin.roles_permissions.index', icon: 'mdi-account-key-outline', roles: ['super_admin', 'roles_manager'] },
+    { name: 'Pengguna', routeName: 'admin.users.index', icon: 'mdi-account-multiple-outline', roles: ['super_admin', 'roles_manager'] },
     { name: 'Profil Gereja', routeName: 'admin.profile.edit', icon: 'mdi-cog-outline', roles: ['super_admin'] },
 ];
 

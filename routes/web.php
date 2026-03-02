@@ -10,6 +10,7 @@ use App\Http\Controllers\Admin\PrayerRequestController;
 use App\Http\Controllers\Web\HomeController;
 use App\Http\Controllers\Admin\AuditLogController;
 use App\Http\Controllers\Admin\RolePermissionController;
+use App\Http\Controllers\Admin\UserController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -102,6 +103,13 @@ Route::middleware(['auth', 'admin', 'audit'])->prefix('admin')->name('admin.')->
     Route::post('roles-permissions/assign', [RolePermissionController::class, 'assignRoleToUser'])
         ->name('roles_permissions.assign')
         ->middleware('permission:roles.manage');
+
+    Route::get('users', [UserController::class, 'index'])
+        ->name('users.index')
+        ->middleware('permission:users.manage');
+    Route::put('users/{user}/roles', [UserController::class, 'updateRoles'])
+        ->name('users.roles.update')
+        ->middleware('permission:users.manage');
 });
 
 require __DIR__ . '/auth.php';

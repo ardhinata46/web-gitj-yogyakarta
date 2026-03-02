@@ -34,6 +34,7 @@ class RolePermissionSeeder extends Seeder
             'sliders.manage',
             'audit_logs.view',
             'roles.manage',
+            'users.manage',
         ];
 
         $roleModels = [];
@@ -73,6 +74,7 @@ class RolePermissionSeeder extends Seeder
 
         $roleModels['roles_manager']->permissions()->sync([
             $permissionModels['roles.manage']->id,
+            $permissionModels['users.manage']->id,
         ]);
 
         $admin = User::where('email', 'admin@example.com')->first();

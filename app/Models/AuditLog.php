@@ -11,6 +11,7 @@ class AuditLog extends Model
         'user_id',
         'action',
         'method',
+        'status_code',
         'url',
         'route_name',
         'ip_address',
